@@ -1,0 +1,3 @@
+"D:\software\CLion\CLion 2020.3.4\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\Timer_slaver_machine.dir/objects.a
+"D:\software\CLion\CLion 2020.3.4\bin\mingw64\bin\ar.exe" cr CMakeFiles\Timer_slaver_machine.dir/objects.a @CMakeFiles\Timer_slaver_machine.dir\objects1.rsp
+"D:\software\CLion\CLion 2020.3.4\bin\mingw64\bin\g++.exe" -g   -Wl,--whole-archive CMakeFiles\Timer_slaver_machine.dir/objects.a -Wl,--no-whole-archive  -o Timer_slaver_machine.exe -Wl,--out-implib,libTimer_slaver_machine.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Timer_slaver_machine.dir\linklibs.rsp

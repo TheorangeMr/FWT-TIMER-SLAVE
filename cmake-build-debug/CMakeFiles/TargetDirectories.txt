@@ -1,0 +1,3 @@
+C:/Users/19565/Desktop/Timer_slave/Timer_slaver_machine/cmake-build-debug/CMakeFiles/Timer_slaver_machine.dir
+C:/Users/19565/Desktop/Timer_slave/Timer_slaver_machine/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/19565/Desktop/Timer_slave/Timer_slaver_machine/cmake-build-debug/CMakeFiles/rebuild_cache.dir
