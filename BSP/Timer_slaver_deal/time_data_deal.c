@@ -1,3 +1,11 @@
+/*******************************************
+	*	@file £º  time_data_deal.c
+	* @author£º  ÂÞ³É
+	* @data£º 2023.01.05
+	* @version£º  v1.0
+*******************************************/
+
+
 #include "time_data_deal.h"
 
 extern UART_HandleTypeDef huart2;
@@ -6,16 +14,6 @@ extern UART_HandleTypeDef huart2;
 uint8_t LORA_Version[3] = {0x00,0x00,0x01};
 
 uint8_t LORA_Baud_rate[7] ={0x08,0x04,0x04,0x00,0x01,0xc2,0x00};
-
-/*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
-	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
-*/
-
 
 
 extern uint8_t MS5_sign;
@@ -26,12 +24,12 @@ uint8_t Sys_time = 0;
 uint8_t *p;
 
 /*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
+	*@API_name£ºTimer1_SignPlus()
+	*@brief£º50ms¼ÆÊý
+	*@papam£ºNone
+	*@retval£ºSys_time
 	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
+	*@data£º2023.1.5
 */
 
 //ÖÜÆÚÎª50ms
@@ -45,12 +43,12 @@ uint8_t Timer1_SignPlus(void) {
 
 
 /*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
+	*@API_name£ºCom_Establish()
+	*@brief£º¼ì²âÖ÷»úÅä¶ÔÐÅºÅ¡¢¼ì²âµ½ºó·µ»ØÖ÷»úÅä¶ÔÐÅºÅ
+	*@papam£ºNone
+	*@retval£ºtimer_slover_com
 	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
+	*@data£º2023.1.5
 */
 uint8_t Com_Establish(void) {
 	uint8_t timer_slover_com = 0;
@@ -68,12 +66,12 @@ uint8_t Com_Establish(void) {
 
 
 /*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
+	*@API_name£ºEXTI3_Query()
+  *@brief£ºÏòÖ÷»ú·¢ËÍ´¥·¢½á¹û
+	*@papam£ºNone
+	*@retval£º¡£¡£¡£
 	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
+	*@data£º2023.1.5
 */
 
 extern TIM_HandleTypeDef htim1;
@@ -83,8 +81,8 @@ uint8_t EXTI3_Query(void) {
     if (Passed_sign == 1) {
 			ReceiveBuff[0] = 0;
 			*p = Time_stop;
-			__HAL_TIM_SetCounter(&htim1, 0);                 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			__HAL_TIM_ENABLE(&htim1);                        //ï¿½ò¿ª¶ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½Ö¾
+			__HAL_TIM_SetCounter(&htim1, 0);           
+			__HAL_TIM_ENABLE(&htim1);                       
 			HAL_UART_Transmit(&huart2, p, 1, 0xffff);
 			return 1;
     }
@@ -95,12 +93,12 @@ uint8_t EXTI3_Query(void) {
 
 
 /*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
+	*@API_name£ºStop_Check()
+	*@brief£º¼ì²âÖ÷»ú·µ»Ø×´Ì¬
+	*@papam£ºNone
+	*@retval£ºStop_sign
 	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
+	*@data£º2023.1.5
 */
 uint8_t Stop_Check(void) 
 {
@@ -114,12 +112,12 @@ uint8_t Stop_Check(void)
 
 
 /*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
+	*@API_name£ºSystem_Reset()
+	*@brief£ºÖØÖÃÏµÍ³ÓÚ´ý¼ÆÊ±×´Ì¬
+	*@papam£ºNone
+	*@retval£ºNone
 	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
+	*@data£º2023.1.5
 */
 void System_Reset(void)
 {
@@ -136,12 +134,12 @@ void System_Reset(void)
 
 
 /*
-	*@API_name£ºvoid System_Reset()
-	*@brief£º³õÊ¼»¯Î»ÎÞÏß´®¿ÚÄ£¿é
-	*@data£ºvoid
-	*@return£ºvoid
+	*@API_name£ºLORA_Init()
+	*@brief£ºÐÞ¸ÄÎÞÏßÄ£¿é¹¤×÷²ÎÊý
+	*@papam£ºNone
+	*@retval£ºNone
 	*@author£ºÂÞ³É
-	*@timer£º2023.1.5
+	*@data£º2023.1.5
 */
 
 
