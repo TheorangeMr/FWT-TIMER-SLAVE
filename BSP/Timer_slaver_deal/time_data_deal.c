@@ -16,12 +16,11 @@ uint8_t LORA_Version[3] = {0x00,0x00,0x01};
 uint8_t LORA_Baud_rate[7] ={0x08,0x04,0x04,0x00,0x01,0xc2,0x00};
 
 
-extern uint8_t MS5_sign;
-extern uint8_t MS100_sign;
-extern uint8_t ReceiveBuff[RECEIVEBUFF_SIZE];
-uint8_t Passed_sign = 0;
+extern __IO uint8_t MS5_sign;
+extern __IO uint8_t MS100_sign;
+__IO uint8_t ReceiveBuff = 0;
+__IO uint8_t Passed_sign = 0;
 uint8_t Sys_time = 0;
-uint8_t *p;
 
 /*
 	*@API_name：Timer1_SignPlus()
@@ -52,15 +51,20 @@ uint8_t Timer1_SignPlus(void) {
 */
 uint8_t Com_Establish(void) {
 	uint8_t timer_slover_com = 0;
-    if (ReceiveBuff[0] == Com_establishing2) {
-			   *p = Com_establishing3;
-        HAL_UART_Transmit(&huart2, p, 1, 0xffff);
-			timer_slover_com = 1;
+	uint8_t i = 10;
+    if (ReceiveBuff == Com_establishing2){
+			  timer_slover_com = Com_establishing3;
+			  EXTI->IMR |= (0x08);                 //开启外部中断
+			  while(i--)
+				{
+					HAL_UART_Transmit(&huart2,(uint8_t * ) &timer_slover_com , 1, 0xffff);
+					HAL_Delay(50);
+				}
     }
 		else{
 			timer_slover_com = 0;
 		}
-    ReceiveBuff[0] = 0;
+    ReceiveBuff = 0;
 		return timer_slover_com;
 }
 
@@ -78,12 +82,13 @@ extern TIM_HandleTypeDef htim1;
 
 
 uint8_t EXTI3_Query(void) {
-    if (Passed_sign == 1) {
-			ReceiveBuff[0] = 0;
-			*p = Time_stop;
+	uint8_t ch = 0;
+    if (1 == Passed_sign) {
+			ReceiveBuff = 0;
+			ch = Slaver_Time_stop;
 			__HAL_TIM_SetCounter(&htim1, 0);           
 			__HAL_TIM_ENABLE(&htim1);                       
-			HAL_UART_Transmit(&huart2, p, 1, 0xffff);
+			HAL_UART_Transmit(&huart2, (uint8_t *) &ch , 1, 0xffff);
 			return 1;
     }
 		else{
@@ -103,9 +108,9 @@ uint8_t EXTI3_Query(void) {
 uint8_t Stop_Check(void) 
 {
 	uint8_t Stop_sign = 0;
-	if (ReceiveBuff[0] == Send_stop) {
+	if (ReceiveBuff == Send_stop) {
 		Stop_sign = 1;
-		ReceiveBuff[0] = 0;
+		ReceiveBuff = 0;
 	}
 	return Stop_sign;
 }
@@ -121,15 +126,13 @@ uint8_t Stop_Check(void)
 */
 void System_Reset(void)
 {
-	__HAL_TIM_DISABLE(&htim1);																								//关定时器1和2
-	__HAL_TIM_DISABLE(&htim2);																								//关定时器1和2
+	__HAL_TIM_DISABLE(&htim1);																								//关定时器1
 	__HAL_TIM_SET_COUNTER(&htim1,0x0); 																		 		//计数器清零
-	__HAL_TIM_SET_COUNTER(&htim2,0x0); 																		 		//计数器清零
-	ReceiveBuff[0] = 0;																												//清零串口接收变量
+	ReceiveBuff = 0;																												//清零串口接收变量
 	Passed_sign = 0;																													//清零外部中断标志
 	MS5_sign = 0;																															//清零5ms中断标志
 	Sys_time = 0;																															//清零系统记录时间
-	EXTI->IMR |= (EXTI_LINE_3);																								//开外部中断
+//	EXTI->IMR |= (EXTI_ LINE_3);																								//开外部中断
 }
 
 

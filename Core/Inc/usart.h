@@ -36,7 +36,7 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN Private defines */
-#define  RECEIVEBUFF_SIZE     5
+#define  RECEIVEBUFF_SIZE     1
 
 /* USER CODE END Private defines */
 

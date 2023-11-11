@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dma.h"
 #include "iwdg.h"
 #include "tim.h"
 #include "usart.h"
@@ -93,28 +92,32 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
-  MX_TIM2_Init();
   MX_IWDG_Init();
-  MX_DMA_Init();
   MX_USART2_UART_Init();
+  MX_TIM3_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);   //无线模块  M0,M1
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);                 //蜂鸣器
+	EXTI->IMR &= ~(0x08);        //关闭外部中断
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	  uint8_t ch1 = Com_establishing1;
-		Plus_sign = Timer1_SignPlus();      			//将系统时间赋值
+//		Plus_sign = Timer1_SignPlus();         			//将系统时间赋值
 		while(!Com_flag){
 			HAL_UART_Transmit(&huart2,(uint8_t * ) & ch1, 1, 0xffff);
-			HAL_Delay(500);
+			printf("等待与定时器主机连接...\r\n");
+			HAL_Delay(400);
 			Com_flag = Com_Establish();                          //判断主机是否发送链接标志
 		}
+		printf("连接成功\r\n");
     while(1){
+			  Plus_sign = Timer1_SignPlus();	 				  //将系统时间赋值
         Passing_sign = EXTI3_Query();             //刷新外部中断条件
-				Plus_sign = Timer1_SignPlus();	 				  //将系统时间赋值
 			  while (Passing_sign == 1){       				  //车辆通过终点
-					Stop = Stop_Check();				 		  		  //循环检测主机停止信号	
+					Stop = Stop_Check();				 		  		  //循环检测主机停止信号				
 					if (Stop == 1)                				  //如果接收到来自主机的停止信号，则重置系统并退出
 					{							
 						Passing_sign = Stop = 0;				       //清除循环内标志变量
@@ -122,14 +125,15 @@ int main(void)
 						break;
 					}
 					else                                      //若未检测到，则循环发送
-					{		
+					{
 						uint8_t dat;
 						if (Plus_sign != Timer1_SignPlus())
 						{
-							dat = (Time_stop + (Timer1_SignPlus() << 4));
+							dat = (Slaver_Time_stop | (Timer1_SignPlus() << 4));
+//						printf("dat = 0x%x",dat);
 							HAL_UART_Transmit(&huart2, (uint8_t * ) & dat, 1, 0xffff);
 							Plus_sign = Timer1_SignPlus();
-							if (Plus_sign == 9)                                                //500ms
+							if (Plus_sign == 10)                                                 //500ms
 							{
 								Passing_sign = 0;				                                          //清除循环内标志变量
 								System_Reset();							                                        //系统重置

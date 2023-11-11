@@ -34,6 +34,5 @@ timer_slaver_machine\main.o: ../Core/Inc/main.h
 timer_slaver_machine\main.o: ../Core/Inc/tim.h
 timer_slaver_machine\main.o: D:\software\keil 5 install\ARM\ARMCC\Bin\..\include\stdio.h
 timer_slaver_machine\main.o: ../Core/Inc/usart.h
-timer_slaver_machine\main.o: ../Core/Inc/dma.h
 timer_slaver_machine\main.o: ../Core/Inc/iwdg.h
 timer_slaver_machine\main.o: ../Core/Inc/gpio.h

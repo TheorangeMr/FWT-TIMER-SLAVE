@@ -22,6 +22,7 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +42,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern __IO uint8_t ReceiveBuff;
+extern __IO uint8_t MS5_sign;
+extern __IO uint16_t MS100_sign;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +60,7 @@
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
-extern DMA_HandleTypeDef hdma_usart2_rx;
+extern TIM_HandleTypeDef htim3;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
@@ -87,7 +90,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+	printf("HardFault_error!");
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -216,28 +219,19 @@ void EXTI3_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA1 channel6 global interrupt.
-  */
-void DMA1_Channel6_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
-
-  /* USER CODE END DMA1_Channel6_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart2_rx);
-  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel6_IRQn 1 */
-}
-
-/**
   * @brief This function handles TIM1 update interrupt.
   */
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-
+	if(__HAL_TIM_GET_FLAG(&htim1,TIM_FLAG_UPDATE) != RESET)
+	{
+		__HAL_TIM_CLEAR_FLAG(&htim1,TIM_FLAG_UPDATE);
+		MS5_sign++;	//定时标志++
+//		printf("TIM1\r\n");
+	}
   /* USER CODE END TIM1_UP_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim1);
+//  HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
 
   /* USER CODE END TIM1_UP_IRQn 1 */
@@ -249,12 +243,43 @@ void TIM1_UP_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-
+	if(__HAL_TIM_GET_FLAG(&htim2,TIM_FLAG_UPDATE) != RESET)
+	{
+		__HAL_TIM_CLEAR_FLAG(&htim2,TIM_FLAG_UPDATE);
+		BEEP_CheckoutTask();
+//			printf("TIM2\r\n");
+	}
   /* USER CODE END TIM2_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim2);
+//  HAL_TIM_IRQHandler(&htim2);
   /* USER CODE BEGIN TIM2_IRQn 1 */
 
   /* USER CODE END TIM2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM3 global interrupt.
+  */
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+	if(__HAL_TIM_GET_FLAG(&htim3,TIM_FLAG_UPDATE) != RESET)
+	{
+		__HAL_TIM_CLEAR_FLAG(&htim3,TIM_FLAG_UPDATE);
+		MS100_sign++;	//定时标志++
+		if(MS100_sign > 50)         																					 //5秒中开启开外部中断
+		{
+			__HAL_TIM_DISABLE(&htim3);                                             //关定时器3
+			__HAL_TIM_SET_COUNTER(&htim3,0x0); 																		 //计数器清零
+			EXTI->IMR |= (0x08);                                             //开外部中断
+			MS100_sign = 0;
+//			printf("TIM3\r\n");
+		}
+	}
+  /* USER CODE END TIM3_IRQn 0 */
+//  HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+	
+  /* USER CODE END TIM3_IRQn 1 */
 }
 
 /**
@@ -263,9 +288,20 @@ void TIM2_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-
+	if(__HAL_UART_GET_FLAG(&huart2,UART_FLAG_RXNE) != RESET )
+	{
+		__HAL_UART_CLEAR_FLAG(&huart2,UART_FLAG_RXNE);                     //直接读寄存值
+		ReceiveBuff = (uint8_t)READ_REG(huart2.Instance->DR);
+		if(ReceiveBuff == 20){
+			__set_FAULTMASK(1);
+			NVIC_SystemReset();
+		}
+//	 HAL_UART_Receive(&huart2,(uint8_t *) &ReceiveBuff,1,0xffff);      //使用阻塞式接受可以
+// 	  HAL_UART_Receive_IT(&huart2,(uint8_t *) &ReceiveBuff,2);      //使用非阻塞式接受则不行
+//		printf("0x%x",ReceiveBuff);
+	}
   /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
+//  HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */

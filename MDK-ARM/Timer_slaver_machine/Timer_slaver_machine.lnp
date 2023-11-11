@@ -2,7 +2,6 @@
 "timer_slaver_machine\startup_stm32f103x6.o"
 "timer_slaver_machine\main.o"
 "timer_slaver_machine\gpio.o"
-"timer_slaver_machine\dma.o"
 "timer_slaver_machine\iwdg.o"
 "timer_slaver_machine\tim.o"
 "timer_slaver_machine\usart.o"

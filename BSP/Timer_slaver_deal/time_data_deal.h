@@ -10,11 +10,19 @@
 #include "main.h"
 #include "tim.h"
 
-#define Com_establishing1 0xa1         //通讯已建立标志
-#define Com_establishing2 0xb1         //通讯已建立标志
-#define Com_establishing3 0xc1         //通讯已建立标志
-#define Send_stop 0X88                //停止发送标志
-#define Time_stop 0X08                //主机停止计时标志
+
+//设定从机几号，只需修改Slave_define为对应号数即可
+#define Slave_define  1
+
+//以下为主从机通讯时的信号密钥
+//3次握手信号
+#define Com_establishing1    ((0xa<<4)|Slave_define)                      //通讯已建立标志
+#define Com_establishing2    ((0xb<<4)|Slave_define)                      //通讯已建立标志
+#define Com_establishing3    ((0xc<<4)|Slave_define)                      //通讯已建立标志
+//停止计数信号
+#define Send_stop            ((0xf<<4)|Slave_define)                 //停止发送标志
+#define Slaver_Time_stop     (Send_stop&0x0f)          //主机停止计时标志
+
 
 uint8_t EXTI3_Query(void);
 uint8_t Stop_Check(void);

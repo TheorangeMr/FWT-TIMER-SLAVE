@@ -35,3 +35,4 @@ timer_slaver_machine\stm32f1xx_it.o: ../Core/Inc/tim.h
 timer_slaver_machine\stm32f1xx_it.o: D:\software\keil 5 install\ARM\ARMCC\Bin\..\include\stdio.h
 timer_slaver_machine\stm32f1xx_it.o: ../Core/Inc/usart.h
 timer_slaver_machine\stm32f1xx_it.o: ../Core/Inc/stm32f1xx_it.h
+timer_slaver_machine\stm32f1xx_it.o: ../Core/Inc/gpio.h
